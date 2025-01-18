@@ -1,6 +1,7 @@
 package com.mb.pokemonapi.service;
 
 import com.mb.pokemonapi.dto.PokemonDto;
+import com.mb.pokemonapi.exceptions.PokemonNotFoundException;
 import com.mb.pokemonapi.model.Pokemon;
 import com.mb.pokemonapi.repository.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,26 @@ public class Pokemonimpl implements PokemonService {
         List<Pokemon> pokemon = pokemonRepository.findAll();
         // Step 2: Convert the List<Pokemon> to List<PokemonDto> using a mapping function
         return pokemon.stream().map(p -> mapToDto(p)).collect(Collectors.toList());
+    }
+
+    @Override
+    public PokemonDto getPokemonById(int id) {
+        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow(()-> new PokemonNotFoundException("Pokemon could not be found"));
+        return mapToDto(pokemon);
+    }
+
+    @Override
+    public PokemonDto updatePokemon(PokemonDto pokemonDto, int id) {
+        // Step 1: create a new object based on this pokemon if you can find that pokemon in the repository
+        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow(()-> new PokemonNotFoundException("Pokemon cannot be updated"));
+
+        //step 2: since we are pushing the update back to the database it needs to match the type
+        //so we need to put it back in the model
+        pokemon.setName(pokemonDto.getName());
+        pokemon.setType(pokemonDto.getType());
+
+        Pokemon updatePokemon = pokemonRepository.save(pokemon);
+        return mapToDto(updatePokemon);
     }
 
 

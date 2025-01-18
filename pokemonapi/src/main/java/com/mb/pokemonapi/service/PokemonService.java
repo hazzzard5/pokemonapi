@@ -11,6 +11,11 @@ public interface PokemonService {
     void deletePokemonId(int id);
 
     List<PokemonDto> getAllPokemon();
+
+    PokemonDto getPokemonById(int id);
+
+    PokemonDto updatePokemon(PokemonDto pokemonDto, int id);
+
 }
 
 

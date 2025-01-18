@@ -33,8 +33,8 @@ public class PokemonController {
 
 
     @GetMapping("pokemon/new/{id}")
-    public Pokemon newPokemon(@PathVariable int id){
-        return new Pokemon(id, "MewTwo", "physic");
+    public ResponseEntity<PokemonDto> newPokemon(@PathVariable int id){
+        return ResponseEntity.ok(pokemonService.getPokemonById(id));
     }
 
     @PostMapping("pokemon/create")
@@ -54,6 +54,12 @@ public class PokemonController {
         pokemonService.deletePokemonId(pokemonId);
         //now return the HTTP status this and this message
         return new ResponseEntity<>("Pokemon has been deleted", HttpStatus.OK);
+    }
+
+    @PutMapping("pokemon/{id}/update")
+    public ResponseEntity<PokemonDto> update(@RequestBody PokemonDto pokemonDto, @PathVariable("id") int pokemonid){
+        PokemonDto response = pokemonService.updatePokemon(pokemonDto, pokemonid);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
