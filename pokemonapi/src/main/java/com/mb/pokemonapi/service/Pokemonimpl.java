@@ -1,12 +1,16 @@
 package com.mb.pokemonapi.service;
 
 import com.mb.pokemonapi.dto.PokemonDto;
+import com.mb.pokemonapi.dto.PokemonResponse;
 import com.mb.pokemonapi.exceptions.PokemonNotFoundException;
 import com.mb.pokemonapi.model.Pokemon;
 import com.mb.pokemonapi.repository.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,17 +52,29 @@ public class Pokemonimpl implements PokemonService {
     public void deletePokemonId(int id) {
         //go into the repository
         //find the pokemon by id
-        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow();
+        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow(()-> new PokemonNotFoundException("Pokemon could not be delted"));
         //now once we are inside the repository then we can now utilize the .delete method
         pokemonRepository.delete(pokemon);
     }
 
     @Override
-    public List<PokemonDto> getAllPokemon() {
+    public PokemonResponse getAllPokemon(int pageNo, int pageSize) {
+        Pageable pageable = (Pageable) PageRequest.of(pageNo, pageSize);
         // Step 1: Fetch all Pokémon entities from the database
-        List<Pokemon> pokemon = pokemonRepository.findAll();
+        Page<Pokemon> pokemons = pokemonRepository.findAll((org.springframework.data.domain.Pageable) pageable);
+        List<Pokemon> listOfPokemon = pokemons.getContent();
         // Step 2: Convert the List<Pokemon> to List<PokemonDto> using a mapping function
-        return pokemon.stream().map(p -> mapToDto(p)).collect(Collectors.toList());
+        List<PokemonDto> content =  listOfPokemon.stream().map(p -> mapToDto(p)).collect(Collectors.toList());
+
+        PokemonResponse pokemonResponse = new PokemonResponse();
+        pokemonResponse.setContent(content);
+        pokemonResponse.setPageNo(pokemons.getNumber());
+        pokemonResponse.setPageSize(pokemons.getSize());
+        pokemonResponse.setTotalElements(pokemons.getTotalElements());
+        pokemonResponse.setTotalPages(pokemons.getTotalPages());
+        pokemonResponse.setLast(pokemons.isLast());
+
+        return pokemonResponse;
     }
 
     @Override

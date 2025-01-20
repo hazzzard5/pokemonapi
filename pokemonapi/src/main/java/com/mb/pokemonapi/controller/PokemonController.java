@@ -2,6 +2,7 @@ package com.mb.pokemonapi.controller;
 
 
 import com.mb.pokemonapi.dto.PokemonDto;
+import com.mb.pokemonapi.dto.PokemonResponse;
 import com.mb.pokemonapi.model.Pokemon;
 import com.mb.pokemonapi.service.PokemonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,12 @@ public class PokemonController {
 
     @GetMapping("pokemon")
     //getting a full list of the pokemon using the ResponseEntity
-    public ResponseEntity<List<PokemonDto>> getPokemons() {
-        return new ResponseEntity<>(pokemonService.getAllPokemon(), HttpStatus.OK);
+    public ResponseEntity<PokemonResponse> getPokemons(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize)
+    {
+
+        return new ResponseEntity<>(pokemonService.getAllPokemon(pageNo, pageSize), HttpStatus.OK);
     }
 
 

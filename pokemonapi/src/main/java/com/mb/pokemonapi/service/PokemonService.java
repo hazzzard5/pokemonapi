@@ -1,6 +1,7 @@
 package com.mb.pokemonapi.service;
 
 import com.mb.pokemonapi.dto.PokemonDto;
+import com.mb.pokemonapi.dto.PokemonResponse;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface PokemonService {
 
     void deletePokemonId(int id);
 
-    List<PokemonDto> getAllPokemon();
+    PokemonResponse getAllPokemon(int pageNo, int pageSize);
 
     PokemonDto getPokemonById(int id);
 
