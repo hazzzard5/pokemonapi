@@ -1,9 +1,6 @@
 package com.mb.pokemonapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,4 +17,12 @@ public class Review {
     private String title;
     private String content;
     private int stars;
+
+
+    //using lazy loading since we will be building th relatiosnhip (pokemon to many reviews)
+    //load the relationship but don't load the full object.
+    //saves memory and performance
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pokemon_id")
+    private Pokemon pokemon;
 }

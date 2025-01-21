@@ -3,6 +3,9 @@ package com.mb.pokemonapi.model;
 import jakarta.persistence.*;
 import lombok.Builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Builder
@@ -14,6 +17,9 @@ public class Pokemon {
     private int id;
     private String name;
     private String type;
+
+    @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<Review>();
 
     public Pokemon(int id, String name, String type){
         this.id = id;
@@ -53,4 +59,7 @@ public class Pokemon {
     public void setType(String type) {
         this.type = type;
     }
+
+
+
 }
