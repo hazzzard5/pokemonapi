@@ -18,6 +18,7 @@ public class Pokemon {
     private String name;
     private String type;
 
+    //here we are setting up the 1 to many
     @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<Review>();
 
