@@ -2,6 +2,7 @@ package com.mb.pokemonapi.service;
 
 import com.mb.pokemonapi.dto.ReviewDto;
 import com.mb.pokemonapi.exceptions.PokemonNotFoundException;
+import com.mb.pokemonapi.exceptions.ReviewNotFoundException;
 import com.mb.pokemonapi.model.Review;
 import com.mb.pokemonapi.model.Pokemon;
 import com.mb.pokemonapi.repository.PokemonRepository;
@@ -44,6 +45,20 @@ public class ReviewServiceImpl implements ReviewService{
         List<Review> reviews = reviewRepository.findByPokemonId(id);
 
         return reviews.stream().map(review -> mapToDto(review)).collect(Collectors.toList());
+    }
+
+    @Override
+    public ReviewDto getReviewById(int reviewId, int pokemonId) {
+        //1. find the pokemon from the repository
+        Pokemon pokemon = pokemonRepository.findById(pokemonId).orElseThrow(() -> new PokemonNotFoundException("Pokemon with associated ID not found"));
+        //2. find the review from the repository
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Review associated with ID not found"));
+        //3. go into the review to get the pokemon's id and then compare it to the pokemon.getid
+        if(review.getPokemon().getId() != pokemon.getId()){
+            throw new ReviewNotFoundException("This review does not belong to a pokemon");
+        }
+
+        return mapToDto(review);
     }
 
 
