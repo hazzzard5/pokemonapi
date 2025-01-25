@@ -61,6 +61,43 @@ public class ReviewServiceImpl implements ReviewService{
         return mapToDto(review);
     }
 
+    @Override
+    public ReviewDto updateReview(int pokemonId, int reviewId, ReviewDto reviewDto) {
+        //1. find the pokemon from the repository
+        Pokemon pokemon = pokemonRepository.findById(pokemonId).orElseThrow(() -> new PokemonNotFoundException("Pokemon with associated ID not found"));
+        //2. find the review from the repository
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Review associated with ID not found"));
+        //3. go into the review to get the pokemon's id and then compare it to the pokemon.getid
+        if(review.getPokemon().getId() != pokemon.getId()){
+            throw new ReviewNotFoundException("This review does not belong to a pokemon");
+        }
+
+        //okay now we have to get the DTO object and map it back to our review since \n
+        //we are pushing that back to the database
+
+        review.setTitle(reviewDto.getTitle());
+        review.setContent(reviewDto.getContent());
+        review.setStars(reviewDto.getStars());
+
+        //push this back via the repository
+        Review updateReview = reviewRepository.save(review);
+        //return back to DTO since we dont want the end users to see the original entity fields
+        return mapToDto(updateReview);
+    }
+
+    @Override
+    public void deleteReview(int pokemonId, int reviewId) {
+        Pokemon pokemon = pokemonRepository.findById(pokemonId).orElseThrow(() -> new PokemonNotFoundException("unable to find that associated pokemon"));
+
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("unable to find that review to delete"));
+
+        if(review.getPokemon().getId() != pokemon.getId()){
+            throw new ReviewNotFoundException("This review is unable to be found");
+        }
+
+        reviewRepository.delete(review);
+    }
+
 
     private ReviewDto mapToDto(Review review){
         ReviewDto reviewDto = new ReviewDto();
